@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "yarn build && node dist/src/index.js",
     "start:dev": "ts-node-dev 'src/index.ts'",
-    "test": "",
+    "test:unit": "jest",
     "test:functional": "jest --projects ./test --runInBand",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
