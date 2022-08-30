@@ -15,6 +15,11 @@ export interface Beach {
   user: string;
 }
 
+export interface TimeGroupedForecast {
+  time: string;
+  forecast: BeachForecast[];
+}
+
 export interface BeachForecast extends Omit<Beach, 'user'>, ForecastPoint {}
 
 export class Forecast {
@@ -22,7 +27,7 @@ export class Forecast {
 
   public async processForecastForBeaches(
     beaches: Beach[]
-  ): Promise<BeachForecast[]> {
+  ): Promise<TimeGroupedForecast[]> {
     const pointsWithCorrectSources: BeachForecast[] = [];
 
     for (const beach of beaches) {
@@ -44,6 +49,23 @@ export class Forecast {
       pointsWithCorrectSources.push(...enrichedBeachData);
     }
 
-    return pointsWithCorrectSources;
+    return this.mapForecastByTime(pointsWithCorrectSources);
+  }
+
+  private mapForecastByTime(forecasts: BeachForecast[]): TimeGroupedForecast[] {
+    const timeGroupedForecast: TimeGroupedForecast[] = [];
+
+    for (const forecast of forecasts) {
+      const existingTimeGroup = timeGroupedForecast.find(
+        (timeGroup) => timeGroup.time === forecast.time
+      );
+      if (existingTimeGroup) {
+        existingTimeGroup.forecast.push(forecast);
+      } else {
+        timeGroupedForecast.push({ time: forecast.time, forecast: [forecast] });
+      }
+    }
+
+    return timeGroupedForecast;
   }
 }
